@@ -1,9 +1,11 @@
 package budget;
 
+import java.io.*;
 import java.util.Scanner;
 
 public class Menu {
     private final Scanner scanner = new Scanner(System.in);
+    private final String inputFile = "purchases.txt";
     private BudgetManager budgetManager;
 
     public Menu() {
@@ -45,15 +47,28 @@ public class Menu {
     }
 
     private void saveData() {
-        FileOperations.saveData(budgetManager);
+        try (
+                FileOutputStream fileOutputStream = new FileOutputStream(inputFile);
+                ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream)) {
+            objectOutputStream.writeObject(budgetManager);
+            System.out.println("Purchases were saved!");
+        } catch (IOException e) {
+            //System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     private void loadData() {
-        BudgetManager temp = FileOperations.loadData();
-        if (temp != null) {
-            budgetManager.setBalance(temp.getBalance());
-            budgetManager.addPurchasesFromFile(temp.getPurchaseList());
-            System.out.println("Purchases were loaded!");
+        try (FileInputStream fi = new FileInputStream(new File(inputFile));
+             ObjectInputStream oi = new ObjectInputStream(fi)) {
+            BudgetManager temp = (BudgetManager) oi.readObject();
+            if (temp != null) {
+                budgetManager.setBalance(temp.getBalance());
+                budgetManager.addPurchasesFromFile(temp.getPurchaseList());
+                System.out.println("Purchases were loaded!");
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println(e.getMessage());
         }
     }
 

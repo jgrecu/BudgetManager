@@ -1,9 +1,11 @@
 package budget;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BudgetManager {
+public class BudgetManager implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final List<Product> purchaseList;
     private double balance;
 

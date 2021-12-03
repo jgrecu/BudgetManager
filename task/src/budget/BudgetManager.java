@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BudgetManager {
-    public static final String THE_PURCHASE_LIST_IS_EMPTY = "The purchase list is empty";
     private final List<Product> purchaseList;
     private double balance;
 
@@ -29,13 +28,26 @@ public class BudgetManager {
         return balance;
     }
 
+    public void setBalance(double balance) {
+        this.balance = balance;
+    }
+
+    public void addPurchasesFromFile(List<Product> list) {
+        purchaseList.addAll(list);
+    }
+
+    public List<Product> getPurchaseList() {
+        return new ArrayList<>(purchaseList);
+    }
+
     public void showAllPurchaseList(Category type) {
+        final String LIST_IS_EMPTY = "The purchase list is empty";
         double total = 0.0d;
         System.out.println(type.name() + ":");
         switch (type) {
             case Food:
                 if (purchaseList.stream().noneMatch(e -> e.getCategory() == Category.Food)) {
-                    System.out.println(THE_PURCHASE_LIST_IS_EMPTY);
+                    System.out.println(LIST_IS_EMPTY);
                     return;
                 } else {
                     total = purchaseList.stream()
@@ -49,7 +61,7 @@ public class BudgetManager {
                 break;
             case Clothes:
                 if (purchaseList.stream().noneMatch(e -> e.getCategory() == Category.Clothes)) {
-                    System.out.println(THE_PURCHASE_LIST_IS_EMPTY);
+                    System.out.println(LIST_IS_EMPTY);
                     return;
                 } else {
                     total = purchaseList.stream()
@@ -63,7 +75,7 @@ public class BudgetManager {
                 break;
             case Entertainment:
                 if (purchaseList.stream().noneMatch(e -> e.getCategory() == Category.Entertainment)) {
-                    System.out.println(THE_PURCHASE_LIST_IS_EMPTY);
+                    System.out.println(LIST_IS_EMPTY);
                     return;
                 } else {
                     total = purchaseList.stream()
@@ -77,7 +89,7 @@ public class BudgetManager {
                 break;
             case Other:
                 if (purchaseList.stream().noneMatch(e -> e.getCategory() == Category.Other)) {
-                    System.out.println(THE_PURCHASE_LIST_IS_EMPTY);
+                    System.out.println(LIST_IS_EMPTY);
                     return;
                 } else {
                     total = purchaseList.stream()
@@ -104,5 +116,13 @@ public class BudgetManager {
 
     public boolean isListEmpty() {
         return purchaseList.isEmpty();
+    }
+
+    @Override
+    public String toString() {
+        return "BudgetManager{" +
+                "purchaseList=" + purchaseList +
+                ", balance=" + balance +
+                '}';
     }
 }

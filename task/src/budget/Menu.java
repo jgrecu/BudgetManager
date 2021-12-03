@@ -29,6 +29,12 @@ public class Menu {
                 case "4":
                     showBalance();
                     break;
+                case "5":
+                    saveData();
+                    break;
+                case "6":
+                    loadData();
+                    break;
                 case "0":
                     System.out.println("Bye!");
                     return;
@@ -38,12 +44,27 @@ public class Menu {
         }
     }
 
+    private void saveData() {
+        FileOperations.saveData(budgetManager);
+    }
+
+    private void loadData() {
+        BudgetManager temp = FileOperations.loadData();
+        if (temp != null) {
+            budgetManager.setBalance(temp.getBalance());
+            budgetManager.addPurchasesFromFile(temp.getPurchaseList());
+            System.out.println("Purchases were loaded!");
+        }
+    }
+
     private void printMenu() {
         System.out.println("\nChoose your action:\n" +
                 "1) Add income\n" +
                 "2) Add purchase\n" +
                 "3) Show list of purchases\n" +
                 "4) Balance\n" +
+                "5) Save\n" +
+                "6) Load\n" +
                 "0) Exit\n");
     }
 

@@ -379,7 +379,25 @@ files:
         }
     }
   learner_created: true
-- name: src/budget/Budget.java
+- name: src/budget/Food.java
+  visible: true
+  learner_created: true
+- name: src/budget/Clothes.java
+  visible: true
+  learner_created: true
+- name: src/budget/PurchaseItem.java
+  visible: true
+  learner_created: true
+- name: src/budget/Other.java
+  visible: true
+  learner_created: true
+- name: src/budget/Product.java
+  visible: true
+  learner_created: true
+- name: src/budget/Category.java
+  visible: true
+  learner_created: true
+- name: src/budget/BudgetManager.java
   visible: true
   text: |
     package budget;
@@ -424,18 +442,6 @@ files:
             }
         }
     }
-  learner_created: true
-- name: src/budget/Food.java
-  visible: true
-  learner_created: true
-- name: src/budget/Clothes.java
-  visible: true
-  learner_created: true
-- name: src/budget/PurchaseItem.java
-  visible: true
-  learner_created: true
-- name: src/budget/Other.java
-  visible: true
   learner_created: true
 feedback_link: https://hyperskill.org/learn/step/7026#comment
 status: Solved

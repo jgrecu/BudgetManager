@@ -4,10 +4,10 @@ import java.util.Scanner;
 
 public class Menu {
     private final Scanner scanner = new Scanner(System.in);
-    private Budget budget;
+    private BudgetManager budgetManager;
 
     public Menu() {
-        budget = new Budget();
+        budgetManager = new BudgetManager();
     }
 
     void run() {
@@ -50,76 +50,81 @@ public class Menu {
     private void addIncome() {
         System.out.println("Enter income: ");
         int income = Integer.parseInt(scanner.nextLine());
-        budget.addIncome(income);
+        budgetManager.addIncome(income);
     }
 
     private void showBalance() {
-        double budgetAmount = budget.getBalance();
-        System.out.printf("%nBalance: $%.2f%n", budgetAmount > 0 ? budgetAmount : 0);
+        double budgetAmount = budgetManager.getBalance();
+        System.out.printf("%nBalance: $%.2f%n", budgetAmount > 0 ? budgetAmount : 0.0d);
     }
 
     private void addPurchaseMenu() {
         while (true) {
             printAddPurchaseMenu();
             String choice = scanner.nextLine();
-
+            Category category = null;
             switch (choice) {
                 case "1":
-                    addPurchase("Food");
+                    category = Category.Food;
                     break;
                 case "2":
-                    addPurchase("Clothes");
+                    category = Category.Clothes;
                     break;
                 case "3":
-                    addPurchase("Entertainment");
+                    category = Category.Entertainment;
                     break;
                 case "4":
-                    addPurchase("Other");
+                    category = Category.Other;
                     break;
                 case "5":
                     return;
                 default:
                     break;
             }
+
+            addPurchase(category);
         }
     }
 
-    private void addPurchase(String type) {
+    private void addPurchase(Category type) {
         System.out.println("Enter purchase name:");
         String purchaseName = scanner.nextLine();
         System.out.println("Enter its price:");
         double price = Double.parseDouble(scanner.nextLine());
-        budget.addPurchase(purchaseName, price, type);
+        budgetManager.addPurchase(new Product(type, purchaseName, price));
     }
 
     private void showListOfPurchases() {
-        if (budget.isListEmpty()) {
+        if (budgetManager.isListEmpty()) {
             System.out.println("\nThe purchase list is empty!");
         } else {
             while (true) {
                 printListOfPurchasesMenu();
                 String choice = scanner.nextLine();
+                Category category = null;
+
                 switch (choice) {
                     case "1":
-                        budget.showAllPurchaseList("Food");
+                        category = Category.Food;
                         break;
                     case "2":
-                        budget.showAllPurchaseList("Clothes");
+                        category = Category.Clothes;
                         break;
                     case "3":
-                        budget.showAllPurchaseList("Entertainment");
+                        category = Category.Entertainment;
                         break;
                     case "4":
-                        budget.showAllPurchaseList("Other");
+                        category = Category.Other;
                         break;
                     case "5":
-                        budget.showAllPurchaseList("All");
+                        category = Category.All;
                         break;
                     case "6":
                         return;
                     default:
                         break;
                 }
+                budgetManager.showAllPurchaseList(category);
             }
         }
     }

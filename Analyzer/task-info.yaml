@@ -402,6 +402,402 @@ files:
         }
     }
   learner_created: false
+- name: src/budget/Menu.java
+  visible: true
+  text: |
+    package budget;
+
+    import java.io.*;
+    import java.util.Scanner;
+
+    public class Menu {
+        private final Scanner scanner = new Scanner(System.in);
+        private final String inputFile = "purchases.txt";
+        private BudgetManager budgetManager;
+
+        public Menu() {
+            budgetManager = new BudgetManager();
+        }
+
+        void run() {
+            while (true) {
+                printMenu();
+
+                String choice = scanner.nextLine();
+
+                switch (choice) {
+                    case "1":
+                        addIncome();
+                        break;
+                    case "2":
+                        addPurchaseMenu();
+                        break;
+                    case "3":
+                        showListOfPurchases();
+                        break;
+                    case "4":
+                        showBalance();
+                        break;
+                    case "5":
+                        saveData();
+                        break;
+                    case "6":
+                        loadData();
+                        break;
+                    case "0":
+                        System.out.println("Bye!");
+                        return;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        private void saveData() {
+            try (
+                    FileOutputStream fileOutputStream = new FileOutputStream(inputFile);
+                    ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream)) {
+                objectOutputStream.writeObject(budgetManager);
+                System.out.println("Purchases were saved!");
+            } catch (IOException e) {
+                //System.out.println(e.getMessage());
+                e.printStackTrace();
+            }
+        }
+
+        private void loadData() {
+            try (FileInputStream fi = new FileInputStream(new File(inputFile));
+                 ObjectInputStream oi = new ObjectInputStream(fi)) {
+                BudgetManager temp = (BudgetManager) oi.readObject();
+                if (temp != null) {
+                    budgetManager.setBalance(temp.getBalance());
+                    budgetManager.addPurchasesFromFile(temp.getPurchaseList());
+                    System.out.println("Purchases were loaded!");
+                }
+            } catch (IOException | ClassNotFoundException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+
+        private void printMenu() {
+            System.out.println("\nChoose your action:\n" +
+                    "1) Add income\n" +
+                    "2) Add purchase\n" +
+                    "3) Show list of purchases\n" +
+                    "4) Balance\n" +
+                    "5) Save\n" +
+                    "6) Load\n" +
+                    "0) Exit\n");
+        }
+
+        private void addIncome() {
+            System.out.println("Enter income: ");
+            int income = Integer.parseInt(scanner.nextLine());
+            budgetManager.addIncome(income);
+        }
+
+        private void showBalance() {
+            double budgetAmount = budgetManager.getBalance();
+            System.out.printf("%nBalance: $%.2f%n", budgetAmount > 0 ? budgetAmount : 0.0d);
+        }
+
+        private void addPurchaseMenu() {
+            while (true) {
+                printAddPurchaseMenu();
+                String choice = scanner.nextLine();
+                Category category = null;
+                switch (choice) {
+                    case "1":
+                        category = Category.Food;
+                        break;
+                    case "2":
+                        category = Category.Clothes;
+                        break;
+                    case "3":
+                        category = Category.Entertainment;
+                        break;
+                    case "4":
+                        category = Category.Other;
+                        break;
+                    case "5":
+                        return;
+                    default:
+                        break;
+                }
+
+                addPurchase(category);
+            }
+        }
+
+        private void addPurchase(Category type) {
+            System.out.println("Enter purchase name:");
+            String purchaseName = scanner.nextLine();
+            System.out.println("Enter its price:");
+            double price = Double.parseDouble(scanner.nextLine());
+            budgetManager.addPurchase(new Product(type, purchaseName, price));
+        }
+
+        private void showListOfPurchases() {
+            if (budgetManager.isListEmpty()) {
+                System.out.println("\nThe purchase list is empty!");
+            } else {
+                while (true) {
+                    printListOfPurchasesMenu();
+                    String choice = scanner.nextLine();
+                    Category category = null;
+
+                    switch (choice) {
+                        case "1":
+                            category = Category.Food;
+                            break;
+                        case "2":
+                            category = Category.Clothes;
+                            break;
+                        case "3":
+                            category = Category.Entertainment;
+                            break;
+                        case "4":
+                            category = Category.Other;
+                            break;
+                        case "5":
+                            category = Category.All;
+                            break;
+                        case "6":
+                            return;
+                        default:
+                            break;
+                    }
+                    budgetManager.showAllPurchaseList(category);
+                }
+            }
+        }
+
+        private void printAddPurchaseMenu() {
+            System.out.println("\nChoose the type of purchase\n" +
+                    "1) Food\n" +
+                    "2) Clothes\n" +
+                    "3) Entertainment\n" +
+                    "4) Other\n" +
+                    "5) Back\n");
+        }
+
+        private void printListOfPurchasesMenu() {
+            System.out.println("\nChoose the type of purchases\n" +
+                    "1) Food\n" +
+                    "2) Clothes\n" +
+                    "3) Entertainment\n" +
+                    "4) Other\n" +
+                    "5) All\n" +
+                    "6) Back\n");
+        }
+    }
+  learner_created: true
+- name: src/budget/BudgetManager.java
+  visible: true
+  text: |
+    package budget;
+
+    import java.io.Serializable;
+    import java.util.ArrayList;
+    import java.util.List;
+
+    public class BudgetManager implements Serializable {
+        private static final long serialVersionUID = 1L;
+        private final List<Product> purchaseList;
+        private double balance;
+
+
+        public BudgetManager() {
+            balance = 0.0d;
+            purchaseList = new ArrayList<>();
+        }
+
+        public void addIncome(int income) {
+            this.balance += income;
+            System.out.println("Income was added!");
+        }
+
+        public void addPurchase(Product product) {
+            purchaseList.add(product);
+            balance -= product.getPrice();
+            System.out.println("Purchase was added!");
+        }
+
+        public double getBalance() {
+            return balance;
+        }
+
+        public void setBalance(double balance) {
+            this.balance = balance;
+        }
+
+        public void addPurchasesFromFile(List<Product> list) {
+            purchaseList.addAll(list);
+        }
+
+        public List<Product> getPurchaseList() {
+            return new ArrayList<>(purchaseList);
+        }
+
+        public void showAllPurchaseList(Category type) {
+            final String LIST_IS_EMPTY = "The purchase list is empty";
+            double total = 0.0d;
+            System.out.println(type.name() + ":");
+            switch (type) {
+                case Food:
+                    if (purchaseList.stream().noneMatch(e -> e.getCategory() == Category.Food)) {
+                        System.out.println(LIST_IS_EMPTY);
+                        return;
+                    } else {
+                        total = purchaseList.stream()
+                                .filter(e -> e.getCategory() == Category.Food)
+                                .mapToDouble(Product::getPrice)
+                                .sum();
+                        purchaseList.stream()
+                                .filter(e -> e.getCategory() == Category.Food)
+                                .forEach(System.out::println);
+                    }
+                    break;
+                case Clothes:
+                    if (purchaseList.stream().noneMatch(e -> e.getCategory() == Category.Clothes)) {
+                        System.out.println(LIST_IS_EMPTY);
+                        return;
+                    } else {
+                        total = purchaseList.stream()
+                                .filter(e -> e.getCategory() == Category.Clothes)
+                                .mapToDouble(Product::getPrice)
+                                .sum();
+                        purchaseList.stream()
+                                .filter(e -> e.getCategory() == Category.Clothes)
+                                .forEach(System.out::println);
+                    }
+                    break;
+                case Entertainment:
+                    if (purchaseList.stream().noneMatch(e -> e.getCategory() == Category.Entertainment)) {
+                        System.out.println(LIST_IS_EMPTY);
+                        return;
+                    } else {
+                        total = purchaseList.stream()
+                                .filter(e -> e.getCategory() == Category.Entertainment)
+                                .mapToDouble(Product::getPrice)
+                                .sum();
+                        purchaseList.stream()
+                                .filter(e -> e.getCategory() == Category.Entertainment)
+                                .forEach(System.out::println);
+                    }
+                    break;
+                case Other:
+                    if (purchaseList.stream().noneMatch(e -> e.getCategory() == Category.Other)) {
+                        System.out.println(LIST_IS_EMPTY);
+                        return;
+                    } else {
+                        total = purchaseList.stream()
+                                .filter(e -> e.getCategory() == Category.Other)
+                                .mapToDouble(Product::getPrice)
+                                .sum();
+                        purchaseList.stream()
+                                .filter(e -> e.getCategory() == Category.Other)
+                                .forEach(System.out::println);
+                    }
+                    break;
+                case All:
+                    total = purchaseList.stream()
+                            .mapToDouble(Product::getPrice)
+                            .sum();
+                    purchaseList.forEach(System.out::println);
+                    break;
+                default:
+                    break;
+            }
+            System.out.printf("Total sum: $%.2f%n", total);
+
+        }
+
+        public boolean isListEmpty() {
+            return purchaseList.isEmpty();
+        }
+
+        @Override
+        public String toString() {
+            return "BudgetManager{" +
+                    "purchaseList=" + purchaseList +
+                    ", balance=" + balance +
+                    '}';
+        }
+    }
+  learner_created: true
+- name: purchases.txt
+  visible: true
+  text: "��\0\x05sr\0\x14budget.BudgetManager\0\0\0\0\0\0\0\x01\x02\0\x02D\0\abalanceL\0\
+    \fpurchaseListt\0\x10Ljava/util/List;xp@��\x1e�Q�sr\0\x13java.util.ArrayListx�\
+    �\x1d��a�\x03\0\x01I\0\x04sizexp\0\0\0\x11w\x04\0\0\0\x11sr\0\x0ebudget.Product\0\
+    \0\0\0\0\0\0\x01\x02\0\x03D\0\x05priceL\0\bcategoryt\0\x11Lbudget/Category;L\0\
+    \x04namet\0\x12Ljava/lang/String;xp@A�\n=p��~r\0\x0fbudget.Category\0\0\0\0\0\0\
+    \0\0\x12\0\0xr\0\x0ejava.lang.Enum\0\0\0\0\0\0\0\0\x12\0\0xpt\0\x04Foodt\0\vAlmond\
+    \ 250gsq\0~\0\x05@\f\0\0\0\0\0\0q\0~\0\vt\0\x04Milksq\0~\0\x05@\x17�\x8f\\(�q\0\
+    ~\0\vt\0\x0eRed Fuji Applesq\0~\0\x05@\x0f�\x1e�Q�q\0~\0\vt\0\x04Eggssq\0~\0\x05\
+    @9��G�\x14{q\0~\0\vt\0\eFIJI Natural Artesian Watersq\0~\0\x05@!\x14z�G�\x14q\0\
+    ~\0\vt\0\x1dHershey's milk chocolate barssq\0~\0\x05?�\0\0\0\0\0\0q\0~\0\vt\0\x1c\
+    Great Value Broccoli Floretssq\0~\0\x05@\x19\x1e�Q�\x1fq\0~\0\vt\0\x13Keystone\
+    \ Ground Beesq\0~\0\x05@!8Q�\x1e�~q\0~\0\tt\0\aClothest\0\tGildan LTsq\0~\0\x05\
+    @*\0\0\0\0\0\0q\0~\0\x1dt\0&Men's Dual Defense Crew Socks 12 Pairssq\0~\0\x05\
+    @3�Q�\x1e�q\0~\0\x1dt\0!Wrangler Men's Stretch Cargo Pantsq\0~\0\x05@$333333~q\0\
+    ~\0\tt\0\nEntertainmentt\0\x1cLEGO DUPLO Town Farm Animalssq\0~\0\x05@!u\x8f\\\
+    (�q\0~\0%t\0\x06Cinemasq\0~\0\x05@>\0\0\0\0\0\0q\0~\0%t\0\fSkate rentalsq\0~\0\
+    \x05@3�p��\n=~q\0~\0\tt\0\x05Othert\0\x1dSensodyne Pronamel Toothpastesq\0~\0\x05\
+    @$\0\0\0\0\0\0q\0~\0-t\0\x19Chick-fil-A $10 Gift Cardsq\0~\0\x05@\f\0\0\0\0\0\0\
+    q\0~\0-t\0\x04Debtx"
+  learner_created: true
+- name: src/budget/Category.java
+  visible: true
+  text: |
+    package budget;
+
+    public enum Category {
+        Food, Clothes, Entertainment, Other, All
+    }
+  learner_created: true
+- name: src/budget/Product.java
+  visible: true
+  text: |
+    package budget;
+
+    import java.io.Serializable;
+
+    public class Product implements Serializable {
+        private static final long serialVersionUID = 1L;
+        private Category category;
+        private String name;
+        private double price;
+
+        public Product(Category category, String name, double price) {
+            this.category = category;
+            this.name = name;
+            this.price = price;
+        }
+
+        public Category getCategory() {
+            return category;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public double getPrice() {
+            return price;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("%s $%.2f", name, price);
+        }
+    }
+  learner_created: true
 feedback_link: https://hyperskill.org/learn/step/7028#comment
-status: Unchecked
+status: Solved
+feedback:
+  message: Well done! You've finished the project. Select a new project on <a href="https://hyperskill.org/projects">JetBrains
+    Academy</a> to continue learning.
+  time: Mon, 06 Dec 2021 12:57:32 UTC
 record: -1

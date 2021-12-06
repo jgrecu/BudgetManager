@@ -1,5 +1,5 @@
 package budget;
 
 public enum Category {
-    Food, Clothes, Entertainment, Other, All
+    Food, Entertainment, Clothes, Other, All
 }

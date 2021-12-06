@@ -2,6 +2,7 @@ package budget;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class BudgetManager implements Serializable {
@@ -114,6 +115,111 @@ public class BudgetManager implements Serializable {
         }
         System.out.printf("Total sum: $%.2f%n", total);
 
+    }
+
+    public void showPurchaseListCategorySorted(Category type) {
+        final String LIST_IS_EMPTY = "The purchase list is empty";
+        double total = 0.0d;
+        System.out.println(type.name() + ":");
+        switch (type) {
+            case Food:
+                if (purchaseList.stream().noneMatch(e -> e.getCategory() == Category.Food)) {
+                    System.out.println(LIST_IS_EMPTY);
+                    return;
+                } else {
+                    total = purchaseList.stream()
+                            .filter(e -> e.getCategory() == Category.Food)
+                            .mapToDouble(Product::getPrice)
+                            .sum();
+                    purchaseList.stream()
+                            .filter(e -> e.getCategory() == Category.Food)
+                            .sorted(Comparator.comparing(Product::getPrice).reversed())
+                            .forEach(System.out::println);
+                }
+                break;
+            case Clothes:
+                if (purchaseList.stream().noneMatch(e -> e.getCategory() == Category.Clothes)) {
+                    System.out.println(LIST_IS_EMPTY);
+                    return;
+                } else {
+                    total = purchaseList.stream()
+                            .filter(e -> e.getCategory() == Category.Clothes)
+                            .mapToDouble(Product::getPrice)
+                            .sum();
+                    purchaseList.stream()
+                            .filter(e -> e.getCategory() == Category.Clothes)
+                            .sorted(Comparator.comparing(Product::getPrice).reversed())
+                            .forEach(System.out::println);
+                }
+                break;
+            case Entertainment:
+                if (purchaseList.stream().noneMatch(e -> e.getCategory() == Category.Entertainment)) {
+                    System.out.println(LIST_IS_EMPTY);
+                    return;
+                } else {
+                    total = purchaseList.stream()
+                            .filter(e -> e.getCategory() == Category.Entertainment)
+                            .mapToDouble(Product::getPrice)
+                            .sum();
+                    purchaseList.stream()
+                            .filter(e -> e.getCategory() == Category.Entertainment)
+                            .sorted(Comparator.comparing(Product::getPrice).reversed())
+                            .forEach(System.out::println);
+                }
+                break;
+            case Other:
+                if (purchaseList.stream().noneMatch(e -> e.getCategory() == Category.Other)) {
+                    System.out.println(LIST_IS_EMPTY);
+                    return;
+                } else {
+                    total = purchaseList.stream()
+                            .filter(e -> e.getCategory() == Category.Other)
+                            .mapToDouble(Product::getPrice)
+                            .sum();
+                    purchaseList.stream()
+                            .filter(e -> e.getCategory() == Category.Other)
+                            .sorted(Comparator.comparing(Product::getPrice).reversed())
+                            .forEach(System.out::println);
+                }
+                break;
+            default:
+                break;
+        }
+        System.out.printf("Total sum: $%.2f%n", total);
+
+    }
+
+    public void showAllPurchaseListSorted() {
+        double total = 0.0d;
+        System.out.println("All:");
+        total = purchaseList.stream()
+                .mapToDouble(Product::getPrice)
+                .sum();
+        purchaseList.stream().sorted(Comparator.comparing(Product::getPrice).reversed()).forEach(System.out::println);
+        System.out.printf("Total sum: $%.2f%n", total);
+    }
+
+    public void showAllPurchaseListSortedbyType() {
+        double total = 0.0d;
+
+        System.out.println("Types:");
+        for (Category type : Category.values()) {
+            if (type == Category.All) {
+                continue;
+            }
+            double tempTotal = 0.0d;
+            tempTotal = purchaseList.stream()
+                    .filter(e -> e.getCategory() == type)
+                    .mapToDouble(Product::getPrice)
+                    .sum();
+            if (tempTotal == 0) {
+                continue;
+            }
+            System.out.printf("%s - $%.2f%n", type.name(), tempTotal);
+            total += tempTotal;
+        }
+
+        System.out.printf("Total sum: $%.2f%n", total);
     }
 
     public boolean isListEmpty() {

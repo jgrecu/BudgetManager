@@ -37,6 +37,9 @@ public class Menu {
                 case "6":
                     loadData();
                     break;
+                case "7":
+                    analyzeData();
+                    break;
                 case "0":
                     System.out.println("Bye!");
                     return;
@@ -44,6 +47,65 @@ public class Menu {
                     break;
             }
         }
+    }
+
+    private void analyzeData() {
+        while (true) {
+            printAnalyzeMenu();
+            String choice = scanner.nextLine();
+
+            switch (choice) {
+                case "1":
+                    analyzeDataAll();
+                    break;
+                case "2":
+                    analyzeDataByType();
+                    break;
+                case "3":
+                    analyzeDataType();
+                    break;
+                case "4":
+                    return;
+                default:
+                    break;
+            }
+
+        }
+    }
+
+    private void analyzeDataAll() {
+        if (budgetManager.isListEmpty()) {
+            System.out.println("\nThe purchase list is empty!");
+        } else {
+            budgetManager.showAllPurchaseListSorted();
+        }
+    }
+
+    private void analyzeDataByType() {
+        budgetManager.showAllPurchaseListSortedbyType();
+    }
+
+    private void analyzeDataType() {
+        printAnalyzeTypeMenu();
+        String choice = scanner.nextLine();
+        Category category = null;
+        switch (choice) {
+            case "1":
+                category = Category.Food;
+                break;
+            case "2":
+                category = Category.Clothes;
+                break;
+            case "3":
+                category = Category.Entertainment;
+                break;
+            case "4":
+                category = Category.Other;
+                break;
+            default:
+                break;
+        }
+        budgetManager.showPurchaseListCategorySorted(category);
     }
 
     private void saveData() {
@@ -80,6 +142,7 @@ public class Menu {
                 "4) Balance\n" +
                 "5) Save\n" +
                 "6) Load\n" +
+                "7) Analyze (Sort)\n" +
                 "0) Exit\n");
     }
 
@@ -182,5 +245,21 @@ public class Menu {
                 "4) Other\n" +
                 "5) All\n" +
                 "6) Back\n");
+    }
+
+    private void printAnalyzeMenu() {
+        System.out.println("\nHow do you want to sort?\n" +
+                "1) Sort all purchases\n" +
+                "2) Sort by type\n" +
+                "3) Sort certain type\n" +
+                "4) Back\n");
+    }
+
+    private void printAnalyzeTypeMenu() {
+        System.out.println("\nChoose the type of purchase\n" +
+                "1) Food\n" +
+                "2) Clothes\n" +
+                "3) Entertainment\n" +
+                "4) Other\n");
     }
 }
